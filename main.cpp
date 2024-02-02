@@ -8,9 +8,18 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    std::cout << std::endl;
+
     try {
+
+        std::string path(argv[1]);
+
+        // To clean path from unnecessary '/'
+        while (path[path.length() - 1] == '/')
+            path = path.erase(path.length() - 1);
+
         
-        FileIndexer indexer(argv[1]);
+        FileIndexer indexer(path);
 
         //indexer.printTreeContent();
 
@@ -18,16 +27,19 @@ int main(int argc, char **argv) {
         std::cout << "What word do you want to search for ? (Not case sensitive)" << std::endl;
         std::cin >> word;
 
+        std::cout << std::endl;
+
+        // Input normalized in lowercase
         Node *found = indexer.find(Utils::str_tolower(word));
         if (found) {
+            std::cout << "Files containing this word :" << std::endl;
             sort_string_tab(found->file_paths, found->nb_files);
             for (int i = 0; i < found->nb_files; i++)
                 std::cout << found->file_paths[i] << std::endl;
         } else {
             std::cout << "No .txt file contains this word in this directory" << std::endl;
         }
-        
-        
+
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
     }
@@ -52,8 +64,7 @@ void sort_string_tab(std::string tab[], int len) {
             }
         }
  
-        // If no two elements were swapped
-        // by inner loop, then break
+        // If no swap in inner loop then sorting is done
         if (swapped == false)
             break;
     }
